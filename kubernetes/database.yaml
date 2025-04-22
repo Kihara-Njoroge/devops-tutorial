@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: database-service
+  namespace: test-app
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+      name: mongo
+  selector:
+    app: database
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+  namespace: test-app
+  labels:
+    app: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+        - name: mongodb
+          image: test-app/database:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 27017
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: mongo-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+  namespace: test-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi

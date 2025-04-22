@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-provider
+  namespace: monitoring
+data:
+  dashboard.yaml: |-
+    {
+      "apiVersion": 1,
+      "providers": [
+        {
+          "folder": "",
+          "name": "Default",
+          "options": {
+            "path": "/var/lib/grafana/dashboards"
+          },
+          "orgId": 1,
+          "type": "file"
+        }
+      ]
+    }

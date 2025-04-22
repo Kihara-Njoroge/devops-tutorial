@@ -1,0 +1,37 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: frontend-vs
+  namespace: test-app
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - test-app-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: frontend-service
+            port:
+              number: 80
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: backend-vs
+  namespace: test-app
+spec:
+  hosts:
+    - backend-service
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: backend-service
+            port:
+              number: 3000
